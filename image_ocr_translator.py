@@ -1226,12 +1226,16 @@ def process_xlf_references(
                     # Check 2c: Scan anywhere inside the uploaded directory structure
                     found_src_path = _find_file_fast(abs_path.name, src_g_root)
 
-        # Check 3: Auto-resolution fallback - search workspace parent directory (e.g., Desktop)
+        # Check 3: Auto-resolution fallback - search workspace or parent directory (e.g., Desktop)
         if not found_src_path:
-            parent_dir = Path.cwd().parent
-            found_src_path = _find_file_fast(abs_path.name, parent_dir)
+            found_src_path = _find_file_fast(abs_path.name, Path.cwd())
             if found_src_path:
-                print(f"  ✓ Auto-resolved image from workspace parent -> {found_src_path}")
+                print(f"  ✓ Auto-resolved image from workspace -> {found_src_path}")
+            else:
+                parent_dir = Path.cwd().parent
+                found_src_path = _find_file_fast(abs_path.name, parent_dir)
+                if found_src_path:
+                    print(f"  ✓ Auto-resolved image from workspace parent -> {found_src_path}")
 
         if not found_src_path:
             print(f"  ✗ Image file not found on disk or search paths: {abs_path.name}")
