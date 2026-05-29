@@ -1287,9 +1287,9 @@ def process_xlf_references(
             # Calculated relative path from translated XLIFF directory to Graphics file
             sub_path = sub.as_posix() if hasattr(sub, "as_posix") else str(sub).replace("\\", "/")
             if sub_path in (".", "", "/"):
-                mif_ref = f"graphics/{new_name}"
+                mif_ref = f"../graphics/{new_name}"
             else:
-                mif_ref = f"graphics/{sub_path}/{new_name}"
+                mif_ref = f"../graphics/{sub_path}/{new_name}"
 
             print(f"  Saved  → {saved_abs}")
             print(f"  MIF ref: {mif_ref!r}")
