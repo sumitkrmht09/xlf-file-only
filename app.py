@@ -117,12 +117,7 @@ with col_setup:
         help="Select the FrameMaker-exported XLIFF document."
     )
     
-    default_search_dir = str(Path.cwd().parent)
-    search_dir = st.text_input(
-        "Local Graphics Search Directory", 
-        value=default_search_dir,
-        help="The local folder where the app will search for the referenced graphics/PDFs."
-    )
+    
     
     target_lang = st.selectbox(
         "Select Target Language",
@@ -164,8 +159,6 @@ with col_monitor:
 if start_btn:
     if not xlf_file:
         st.error("Please upload an XLIFF file first.")
-    elif not search_dir or not Path(search_dir).exists():
-        st.error("Please provide a valid local graphics search directory.")
     elif not target_lang:
         st.error("Please select a target language.")
     else:
@@ -225,7 +218,7 @@ if start_btn:
             resume=False,
             batch_size=40,
             dry_run=False,
-            graphics_source_folder=str(search_dir)
+            graphics_source_folder=str(Path.cwd())
         )
         
         try:
