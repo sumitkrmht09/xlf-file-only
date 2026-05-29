@@ -244,21 +244,22 @@ if start_btn:
                 zip_name = f"translated_{target_lang}_{xlf_name_without_ext}"
                 zip_out_path = OUTPUT_DIR / f"{zip_name}.zip"
                 
-                # Zipping output as a single-nested structure (resolves Windows MAX_PATH errors)
+                # Zipping output as a flat structure (resolves Windows MAX_PATH and folder mismatch errors)
                 with zipfile.ZipFile(zip_out_path, "w", zipfile.ZIP_DEFLATED) as zf:
                     for path in sorted(output_root.rglob("*")):
                         if not path.is_file():
                             continue
                         rel = path.relative_to(output_root)
-                        arcname = f"{output_root.name}/{rel.as_posix()}"
+                        arcname = rel.as_posix()
                         zf.write(path, arcname=arcname)
                         
                 # Unzip folder server-side
                 unzip_dest = OUTPUT_DIR / zip_name
                 if unzip_dest.exists():
                     shutil.rmtree(unzip_dest, ignore_errors=True)
+                unzip_dest.mkdir(parents=True, exist_ok=True)
                 with zipfile.ZipFile(zip_out_path, 'r') as zip_ref:
-                    zip_ref.extractall(OUTPUT_DIR)
+                    zip_ref.extractall(unzip_dest)
                     
                 # Mirror copy to local Downloads directory
                 downloads_mirrored = False
@@ -269,8 +270,9 @@ if start_btn:
                         dl_unzip_dest = downloads_dir / zip_name
                         if dl_unzip_dest.exists():
                             shutil.rmtree(dl_unzip_dest, ignore_errors=True)
+                        dl_unzip_dest.mkdir(parents=True, exist_ok=True)
                         with zipfile.ZipFile(zip_out_path, 'r') as zip_ref:
-                            zip_ref.extractall(downloads_dir)
+                            zip_ref.extractall(dl_unzip_dest)
                         downloads_mirrored = True
                         console_logs.append(f"[{job_id}] Successfully extracted folder structure to local Downloads folder.")
                 except Exception as e:
