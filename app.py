@@ -177,7 +177,7 @@ if start_btn:
             f.write(xlf_file.getbuffer())
             
         xlf_name_without_ext = xlf_file.name.replace('.xlf', '').replace('.xliff', '')
-        output_root = OUTPUT_DIR / job_id / f"translated_{target_lang}"
+        output_root = OUTPUT_DIR / job_id / f"translated_{target_lang}_{xlf_name_without_ext}"
         output_root.mkdir(parents=True, exist_ok=True)
         
         # Console Log Stream
@@ -241,7 +241,7 @@ if start_btn:
                 progress_bar.progress(93)
                 status_text.info("Packaging translated assets into ZIP deliverable...")
                 
-                zip_name = f"translated_{target_lang}"
+                zip_name = f"translated_{target_lang}_{xlf_name_without_ext}"
                 zip_out_path = OUTPUT_DIR / f"{zip_name}.zip"
                 
                 # Zipping output as a single-nested structure (resolves Windows MAX_PATH errors)

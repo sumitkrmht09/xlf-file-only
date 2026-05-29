@@ -1202,7 +1202,7 @@ def run_single(args, model_to_use, target_lang):
     input_path = Path(args.input)
     output_root = (
         Path(args.output) if getattr(args, "output", None)
-        else input_path.parent / f"translated_{target_lang}"
+        else input_path.parent / f"translated_{target_lang}_{input_path.stem}"
     )
 
     ok = translate_file(input_path, output_root, target_lang, args, model_to_use)
