@@ -244,14 +244,20 @@ if start_btn:
                 zip_name = f"translated_{target_lang}_{xlf_name_without_ext}"
                 zip_out_path = OUTPUT_DIR / f"{zip_name}.zip"
                 
-                # Zipping output with single-nested structure
+                # Zipping output with both single-nested and double-nested structures
                 with zipfile.ZipFile(zip_out_path, "w", zipfile.ZIP_DEFLATED) as zf:
                     for path in sorted(output_root.rglob("*")):
                         if not path.is_file():
                             continue
                         rel = path.relative_to(output_root)
-                        arcname = f"{output_root.name}/{rel.as_posix()}"
-                        zf.write(path, arcname=arcname)
+                        
+                        # Write single-nested structure (e.g. zip_name/graphics/...)
+                        arcname1 = f"{output_root.name}/{rel.as_posix()}"
+                        zf.write(path, arcname=arcname1)
+                        
+                        # Write double-nested structure (e.g. zip_name/zip_name/graphics/...)
+                        arcname2 = f"{output_root.name}/{output_root.name}/{rel.as_posix()}"
+                        zf.write(path, arcname=arcname2)
                         
                 # Unzip folder server-side
                 unzip_dest = OUTPUT_DIR / zip_name
@@ -259,6 +265,13 @@ if start_btn:
                     shutil.rmtree(unzip_dest, ignore_errors=True)
                 with zipfile.ZipFile(zip_out_path, 'r') as zip_ref:
                     zip_ref.extractall(OUTPUT_DIR)
+                    
+                srv_double_nested = unzip_dest / zip_name
+                srv_double_nested.mkdir(parents=True, exist_ok=True)
+                if (unzip_dest / "graphics").exists():
+                    shutil.copytree(unzip_dest / "graphics", srv_double_nested / "graphics", dirs_exist_ok=True)
+                if (unzip_dest / "text_conversion_file").exists():
+                    shutil.copytree(unzip_dest / "text_conversion_file", srv_double_nested / "text_conversion_file", dirs_exist_ok=True)
 
                 # Mirror copy to local Downloads directory
                 downloads_mirrored = False
@@ -271,8 +284,15 @@ if start_btn:
                             shutil.rmtree(dl_unzip_dest, ignore_errors=True)
                         with zipfile.ZipFile(zip_out_path, 'r') as zip_ref:
                             zip_ref.extractall(downloads_dir)
+                            
+                        double_nested_dir = dl_unzip_dest / zip_name
+                        double_nested_dir.mkdir(parents=True, exist_ok=True)
+                        if (dl_unzip_dest / "graphics").exists():
+                            shutil.copytree(dl_unzip_dest / "graphics", double_nested_dir / "graphics", dirs_exist_ok=True)
+                        if (dl_unzip_dest / "text_conversion_file").exists():
+                            shutil.copytree(dl_unzip_dest / "text_conversion_file", double_nested_dir / "text_conversion_file", dirs_exist_ok=True)
                         downloads_mirrored = True
-                        console_logs.append(f"[{job_id}] Successfully extracted folder structure to local Downloads folder.")
+                        console_logs.append(f"[{job_id}] Successfully extracted double-nested folder structure to local Downloads folder.")
                 except Exception as e:
                     console_logs.append(f"[{job_id}] Mirroring download warning: {e}")
                     
