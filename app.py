@@ -1,3 +1,4 @@
+# FrameMaker XLIFF-Only Translation Studio Web App
 import os
 import shutil
 import uuid
