@@ -1112,7 +1112,7 @@ def translate_file(input_path, output_root, target_lang, args, model_to_use, pro
             input_path,
             target_lang,
             out_folder=output_root / "graphics",  
-            rel_prefix="",  
+            rel_prefix=f"../{output_root.name}/graphics",  
             rename_with_lang=False,  
             out_xlf_path=xlf_out_path,
             src_graphics_folder=getattr(args, "graphics_source_folder", None),  # Pass uploaded input target 
