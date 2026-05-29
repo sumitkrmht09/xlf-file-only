@@ -1293,7 +1293,7 @@ def main():
                 if not path.is_file():
                     continue
                 rel = path.relative_to(output_folder)
-                arcname = rel.as_posix()
+                arcname = f"{output_folder.name}/{rel.as_posix()}"
                 zf.write(path, arcname=arcname)
                 count += 1
 
